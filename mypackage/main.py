@@ -1,7 +1,6 @@
 #---Importing used libraries------------------------
 import pandas as pd
-import numpy as np 
-import ast
+import json
 
 
 #---Installing the datasets------------------------
@@ -44,20 +43,19 @@ Lastly, a table with only the users called users_table'''
 # 1- Movies_table
 '''For creating the dataset with the infomration needed, different methods will be used depending on what
 For the genres and actors, regex is used because it is noticed that the same format is used, so str.findall will print everything,
-we have to limit the number of actors that are chosen to 5.
-'''
-movies['genres_parsed'] = movies['genres'].str.findall(r'"name": "([^"]+)"') # New column called genres_parsed
-credits['actors_parsed'] = credits['cast'].str.findall(r'"name": "([^"]+)"') # New column called actors_parsed
-credits['actors_parsed'] = credits['actors_parsed'].apply(lambda x: x[:5])   # Limiting the number of actors to 5
+we have to limit the number of actors that are chosen to 5.'''
+
+movies['genres_parsed'] = movies['genres'].str.findall(r'"name": "([^"]+)"').apply(json.dumps)
+credits['actors_parsed'] = credits['cast'].str.findall(r'"name": "([^"]+)"').apply(lambda x: json.dumps(x[:5]))
 
 '''The next step we have is choosing the director.
-The director format isn't consistent so a new method called ast.literal_eval() is used.
+The director format isn't consistent so a new method called json.loads() is used.
 This method  converts the JSON string into a real Python list of dictionaries
-so that looping through them and finding the member whose job is "Director is possible'''
+so that looping through them and finding the member whose job is "Director" is possible'''
 
 
 def get_director(crew_str):
-    for member in ast.literal_eval(crew_str):
+    for member in json.loads(crew_str):
         if member['job'] == 'Director':
             return member['name']
     return None
