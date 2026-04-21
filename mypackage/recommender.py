@@ -14,9 +14,9 @@ import pandas as pd
 import ast
 
 #----Loading the tables--------------------------
-movies_table = pd.read_csv('movies_table.csv')
-ratings_table = pd.read_csv('ratings_table.csv')
-users_table = pd.read_csv('users_table.csv')
+movies_table = pd.read_csv('data/movies_table.csv')
+ratings_table = pd.read_csv('data/ratings_table.csv')
+users_table = pd.read_csv('data/users_table.csv')
 
 
 #----Step 1: Build user profile------------------
