@@ -16,8 +16,6 @@ user_ratings = {
     'Sully' : 3,
     'The Usual Suspects' : 3,
     'Superbad' : 3,
-    'The Breakfast Club' : 3,
-    'American Psycho' : 3,
     'Fargo' : 3,
     'The Dark Knight Rises' : 5,
     'Batman Begins' : 3
