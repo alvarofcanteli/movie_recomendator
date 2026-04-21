@@ -5,10 +5,10 @@ import ast
 
 
 #---Installing the datasets------------------------
-movies = pd.read_csv('tmdb_5000_movies.csv')
-credits = pd.read_csv('tmdb_5000_credits.csv')
-ml_ratings = pd.read_csv('ratings.csv')
-ml_links = pd.read_csv('links.csv')
+movies = pd.read_csv('data/tmdb_5000_movies.csv')
+credits = pd.read_csv('data/tmdb_5000_credits.csv')
+ml_ratings = pd.read_csv('data/ratings.csv')
+ml_links = pd.read_csv('data/links.csv')
 
 
 #---Exploration-----------------------------------

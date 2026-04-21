@@ -1,12 +1,27 @@
 # =================================================================================
 #SIMULATED USER INPUT FOR TESTING
 user_ratings = {
-    'Inception': 5,
-    'The Dark Knight': 4,
-    'Titanic': 2,
-    'The Matrix': 5,
-    'Avatar': 3
-}
+    'The Shawsank Redemption': 5,
+    'The Dark Knight': 5,
+    'Inglourious Basterds': 5,
+    'Rear Window': 4,
+    'Pulp Fiction': 4,
+    'Gladiator' : 4,
+    'Forrest Gump' : 4,
+    'After Hours' : 4,
+    'Primal Fear' : 4,
+    'Little Miss Sunshine': 4,
+    'Joker' : 4,
+    'Deads Poets Society' : 3,
+    'Sully' : 3,
+    'The Usual Suspects' : 3,
+    'Superbad' : 3,
+    'The Breakfast Club' : 3,
+    'American Psycho' : 3,
+    'Fargo' : 3,
+    'The Dark Knight Rises' : 5,
+    'Batman Begins' : 3
+ }
 
 
 # =================================================================================
