@@ -26,7 +26,7 @@ user_ratings = {
 
 # =================================================================================
 import pandas as pd
-import ast
+import json
 
 #----Loading the tables--------------------------
 movies_table = pd.read_csv('movies_table.csv')
@@ -55,7 +55,7 @@ def build_user_profile(user_ratings, movies_table):
             continue #We iterate in movie_table. If user_rating movie ins't in movie_table, continue
 
         # Genres
-        genres = ast.literal_eval(movie['genres'].values[0]) # A list is created with all the genres of each movie
+        genres = json.loads(movie['genres'].values[0]) # A list is created with all the genres of each movie
         for genre in genres: # Iteration over the list for each genre
             profile[genre] = profile.get(genre, 0) + weight * 2 # We are creating keys that are each genre, and summing the weight (rating-3) * 2 
             counts[genre] = counts.get(genre, 0) + 1 # We are counting how many times each genre appears for the mean later
@@ -67,7 +67,7 @@ def build_user_profile(user_ratings, movies_table):
             counts[director] = counts.get(director, 0) + 1
 
         # Actors
-        actors = ast.literal_eval(movie['actors'].values[0])
+        actors = json.loads(movie['actors'].values[0])
         for actor in actors: #Same as genres but actors
             profile[actor] = profile.get(actor, 0) + weight * 1
             counts[actor] = counts.get(actor, 0) + 1
@@ -98,7 +98,7 @@ def content_score(user_profile, movies_table):
         total = 0  # Total features of the movie
 
         # Genres
-        genres = ast.literal_eval(row['genres'])
+        genres = json.loads(row['genres'])
         for genre in genres:
             if genre in user_profile:
                 score += user_profile[genre] * 2
@@ -111,7 +111,7 @@ def content_score(user_profile, movies_table):
             total += 1  # Count director always
 
         # Actors
-        actors = ast.literal_eval(row['actors'])
+        actors = json.loads(row['actors'])
         for actor in actors:
             if actor in user_profile:
                 score += user_profile[actor] * 1
