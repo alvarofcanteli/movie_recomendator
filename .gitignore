@@ -1,0 +1,9 @@
+# Environment variables
+.env
+
+# Datasets
+data/
+
+# Python cache
+__pycache__/
+*.pyc
