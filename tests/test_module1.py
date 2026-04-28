@@ -1,58 +1,73 @@
-from movierec.main import get_director
 import pandas as pd
+import json
+from movierec.main import get_director
 
-#----------------------------
-#Test to get director
-#----------------------------
 
-#Case where there is a director
+# ---------------------------
+# Test get_director
+# ---------------------------
 def test_get_director_found():
-    crew = '[{"job": "Director", "name": "James Cameron"}, {"job": "Producer", "name": "John"}]'
-    assert get_director(crew) == "James Cameron"
+    crew = json.dumps([
+        {"job": "Director", "name": "James Cameron"},
+        {"job": "Producer", "name": "John"}
+    ])
+    assert get_director(crew) == "James Cameron" #Checks that the director coincidies
 
-#Case where there isn't a director
+
 def test_get_director_not_found():
-    crew = '[{"job": "Producer", "name": "Someone"}]'
-    assert get_director(crew) is None
+    crew = json.dumps([
+        {"job": "Producer", "name": "Someone"}
+    ])
+    assert get_director(crew) is None #Makes sure that if there isn't a director python realises it
+
 
 # ---------------------------
-# Test genre parsing
+# Test genre parsing (JSON version)
 # ---------------------------
-def test_genres_parsing():
+def test_genres_parsing_json():
     genres = '[{"name": "Action"}, {"name": "Comedy"}]'
-    parsed = pd.Series([genres]).str.findall(r'"name": "([^"]+)"')[0]
 
-    assert parsed == ["Action", "Comedy"] #Checks taht in the example there are 2 genres: Comedy and action
+    parsed = pd.Series([genres]) \
+        .str.findall(r'"name": "([^"]+)"') \
+        .apply(json.dumps)[0]
+
+    # Now it's a JSON string → convert back to list
+    parsed_list = json.loads(parsed)
+
+    assert parsed_list == ["Action", "Comedy"] #Makes sure that the themes coincides with what it should
 
 
 # ---------------------------
-# Test actors limit
+# Test actors limit (JSON version)
 # ---------------------------
-def test_actors_limit():
+def test_actors_limit_json():
     df = pd.DataFrame({
         "cast": ['[{"name": "A"}, {"name": "B"}, {"name": "C"}, {"name": "D"}, {"name": "E"}, {"name": "F"}]']
     })
 
-    df['actors_parsed'] = df['cast'].str.findall(r'"name": "([^"]+)"')
-    df['actors_parsed'] = df['actors_parsed'].apply(lambda x: x[:5])
+    df['actors_parsed'] = df['cast'] \
+        .str.findall(r'"name": "([^"]+)"') \
+        .apply(lambda x: json.dumps(x[:5]))
 
-    assert len(df['actors_parsed'][0]) == 5 #checks that there are 5 actors since it is the quantity in the example
+    actors_list = json.loads(df['actors_parsed'][0])
+
+    assert len(actors_list) == 5 #Making sure that the number of actors is correct
 
 
 # ---------------------------
-# Test movies_table merge
+# Test movies_table merge (JSON version)
 # ---------------------------
-def test_movies_table_merge():
+def test_movies_table_merge_json():
     movies = pd.DataFrame({
         "id": [1],
         "title": ["Movie A"],
-        "genres_parsed": [["Action"]]
+        "genres_parsed": [json.dumps(["Action"])]
     })
 
     credits = pd.DataFrame({
         "movie_id": [1],
         "director": ["Director A"],
-        "actors_parsed": [["Actor1", "Actor2"]]
+        "actors_parsed": [json.dumps(["Actor1", "Actor2"])]
     })
 
     movies_table = movies.merge(
@@ -61,8 +76,13 @@ def test_movies_table_merge():
         right_on="movie_id"
     ).drop(columns="movie_id")
 
-    assert "director" in movies_table.columns
-    assert movies_table.iloc[0]["director"] == "Director A" #Checks that the Director is insided the newly merged function
+    movies_table = movies_table.rename(columns={
+        "genres_parsed": "genres",
+        "actors_parsed": "actors"
+    })
+
+    assert "genres" in movies_table.columns
+    assert json.loads(movies_table.iloc[0]["actors"]) == ["Actor1", "Actor2"] #Makes sure that the actors have been saved into the movie_table
 
 
 # ---------------------------
@@ -75,7 +95,7 @@ def test_users_table_unique():
 
     users_table = ratings[['userId']].drop_duplicates().reset_index(drop=True)
 
-    assert list(users_table['userId']) == [1, 2, 3] #Checks that the user's id coincide and that it dropped the dupplicate since you don't want the same user id to appear twice
+    assert list(users_table['userId']) == [1, 2, 3] #Makes sure that the same id isn't repeated
 
 
 # ---------------------------
@@ -99,4 +119,4 @@ def test_ratings_table():
     ratings_table = ratings_table.dropna()
     ratings_table['movieId'] = ratings_table['movieId'].astype(int)
 
-    assert ratings_table.iloc[0]["movieId"] == 100 #Checks that the movie rating in the link imported coincides to check that the ratings table is correct.
+    assert ratings_table.iloc[0]["movieId"] == 100 #to check that the ratings table is correct.

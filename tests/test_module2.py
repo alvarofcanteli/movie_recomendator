@@ -1,5 +1,5 @@
-
 import pandas as pd
+import json
 from movierec.recommender import (
     build_user_profile,
     content_score,
@@ -9,15 +9,15 @@ from movierec.recommender import (
 
 
 # ---------------------------
-# Fixtures
+# Sample data
 # ---------------------------
 def sample_movies():
     return pd.DataFrame({
         "id": [1, 2],
         "title": ["Movie A", "Movie B"],
-        "genres": ['["Action", "Sci-Fi"]', '["Drama"]'],
+        "genres": [json.dumps(["Action"]), json.dumps(["Drama"])],
         "director": ["Director X", "Director Y"],
-        "actors": ['["Actor1", "Actor2"]', '["Actor3"]']
+        "actors": [json.dumps(["Actor1", "Actor2"]), json.dumps(["Actor3"])]
     })
 
 
@@ -30,11 +30,11 @@ def sample_ratings():
 
 
 # ---------------------------
-# build_user_profile
+# Test build_user_profile
 # ---------------------------
 def test_build_user_profile():
     movies = sample_movies()
-    user_ratings = {"Movie A": 5}
+    user_ratings = {"Movie A": 5}  # weight = +2
 
     profile = build_user_profile(user_ratings, movies)
 
@@ -43,15 +43,15 @@ def test_build_user_profile():
     assert profile["Actor1"] == 2
 
 
-def test_build_user_profile_missing():
+def test_build_user_profile_missing_movie():
     movies = sample_movies()
-    user_ratings = {"Unknown": 5}
+    profile = build_user_profile({"Unknown": 5}, movies)
 
-    assert build_user_profile(user_ratings, movies) == {}
+    assert profile == {}
 
 
 # ---------------------------
-# content_score
+# Test content_score
 # ---------------------------
 def test_content_score_structure():
     movies = sample_movies()
@@ -73,11 +73,12 @@ def test_content_score_ranking():
 
 
 # ---------------------------
-# collaborative_score
+# Test collaborative_score
 # ---------------------------
-def test_collaborative_score_basic():
+def test_collaborative_score_runs():
     movies = sample_movies()
     ratings = sample_ratings()
+
     user_ratings = {"Movie A": 5}
 
     result = collaborative_score(user_ratings, ratings, movies)
@@ -95,7 +96,7 @@ def test_collaborative_score_empty():
 
 
 # ---------------------------
-# hybrid_score
+# Test hybrid_score
 # ---------------------------
 def test_hybrid_score_structure():
     content = pd.DataFrame({
@@ -133,7 +134,7 @@ def test_hybrid_score_ranking():
     assert result.iloc[0]["title"] == "A"
 
 
-def test_hybrid_score_no_division_by_zero():
+def test_hybrid_score_no_div_zero():
     content = pd.DataFrame({
         "id": [1, 2],
         "title": ["A", "B"],
