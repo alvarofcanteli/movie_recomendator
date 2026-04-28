@@ -1,36 +1,5 @@
-# =================================================================================
-#SIMULATED USER INPUT FOR TESTING
-user_ratings = {
-    'The Shawsank Redemption': 5,
-    'The Dark Knight': 5,
-    'Inglourious Basterds': 5,
-    'Rear Window': 4,
-    'Pulp Fiction': 4,
-    'Gladiator' : 4,
-    'Forrest Gump' : 4,
-    'After Hours' : 4,
-    'Primal Fear' : 4,
-    'Little Miss Sunshine': 4,
-    'Joker' : 4,
-    'Deads Poets Society' : 3,
-    'Sully' : 3,
-    'The Usual Suspects' : 3,
-    'Superbad' : 3,
-    'Fargo' : 3,
-    'The Dark Knight Rises' : 5,
-    'Batman Begins' : 3
- }
-
-
-# =================================================================================
 import pandas as pd
 import json
-
-#----Loading the tables--------------------------
-movies_table = pd.read_csv('data/movies_table.csv')
-ratings_table = pd.read_csv('data/ratings_table.csv')
-users_table = pd.read_csv('data/users_table.csv')
-
 
 #----Step 1: Build user profile------------------
 '''This function takes the user ratings and the movies table and builds a profile.
@@ -76,10 +45,6 @@ def build_user_profile(user_ratings, movies_table):
 
     return profile
 
-user_profile = build_user_profile(user_ratings, movies_table)
-print("\n ===USER PROFILE===")
-print(user_profile)
-
 
 
 #----Step 2: Content-based scoring---------------
@@ -121,11 +86,6 @@ def content_score(user_profile, movies_table):
         scores.append({'id': row['id'], 'title': row['title'], 'content_score': score})
 
     return pd.DataFrame(scores).sort_values('content_score', ascending=False)
-
-content_scores = content_score(user_profile, movies_table)
-print("\n ===CONTENT SCORES===")
-print(content_scores.head(10))
-
 
 
 #----Step 3: Collaborative filtering------------
@@ -182,10 +142,6 @@ def collaborative_score(user_ratings, ratings_table, movies_table):
             results.append({'id': mid, 'title': title_row['title'].values[0], 'collab_score': collab_score})
     return pd.DataFrame(results).sort_values('collab_score', ascending=False)
 
-collab_scores = collaborative_score(user_ratings, ratings_table, movies_table)
-print("\n ===COLLABORATORY SCORES===")
-print(collab_scores.head(10))
-
 
 #----Step 4: Hybrid scoring----------------------
 '''This function combines the content-based and collaborative scores into a final score.
@@ -211,6 +167,55 @@ def hybrid_score(content_scores, collab_scores, alpha=0.4):
 
     return combined[['id', 'title', 'final_score']].sort_values('final_score', ascending=False)
 
-final_recommendations = hybrid_score(content_scores, collab_scores)
-print("\n===FINAL RECOMMENDATIONS===")
-print(final_recommendations.head(10))
+
+def main():
+    # =================================================================================
+    #SIMULATED USER INPUT FOR TESTING
+    user_ratings = {
+        'The Shawshank Redemption': 5,
+        'The Dark Knight': 5 ,
+        'Inglourious Basterds': 5,
+        'Rear Window': 4,
+        'Pulp Fiction': 4,
+        'Gladiator' : 4,
+        'Forrest Gump' : 4,
+        'After Hours' : 4,
+        'Primal Fear' : 4,
+        'Little Miss Sunshine': 4,
+        'Joker' : 4,
+        'Deads Poets Society' : 3,
+        'Sully' : 3,
+        'The Usual Suspects' : 3,
+        'Superbad' : 3,
+        'Fargo' : 3,
+        'The Dark Knight Rises' : 5,
+        'Batman Begins' : 3
+        }
+    # =================================================================================
+
+    #----Loading the tables--------------------------
+    movies_table = pd.read_csv('data/movies_table.csv')
+    ratings_table = pd.read_csv('data/ratings_table.csv')
+    users_table = pd.read_csv('data/users_table.csv')
+
+
+    user_profile = build_user_profile(user_ratings, movies_table)
+    print("\n ===USER PROFILE===")
+    print(user_profile)
+    
+    content_scores = content_score(user_profile, movies_table)
+    print("\n ===CONTENT SCORES===")
+    print(content_scores.head(10))
+
+
+    collab_scores = collaborative_score(user_ratings, ratings_table, movies_table)
+    print("\n ===COLLABORATORY SCORES===")
+    print(collab_scores.head(10))
+    
+    final = hybrid_score(content_scores, collab_scores)
+    print("\n===FINAL RECOMMENDATIONS===")
+    print(final.head())
+
+
+if __name__ == "__main__":
+    main()
