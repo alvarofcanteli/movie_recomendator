@@ -49,6 +49,7 @@ def get_poster(title):
     except:
         pass
     return None 
+
 def get_movie_details(title):
     url = f"https://api.themoviedb.org/3/search/movie?query={title}&language=en-US"
     headers = {"Authorization": f"Bearer {TMDB_API_KEY}"}
