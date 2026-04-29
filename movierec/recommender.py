@@ -140,7 +140,10 @@ def collaborative_score(user_ratings, ratings_table, movies_table):
         title_row = movies_table[movies_table['id'] == mid]
         if not title_row.empty:
             results.append({'id': mid, 'title': title_row['title'].values[0], 'collab_score': collab_score})
-    return pd.DataFrame(results).sort_values('collab_score', ascending=False)
+    df = pd.DataFrame(results, columns=['id', 'title', 'collab_score'])
+    if df.empty:
+        return df
+    return df.sort_values('collab_score', ascending=False)  
 
 
 #----Step 4: Hybrid scoring----------------------
@@ -150,22 +153,45 @@ The final score is calculated as alpha * content_normalized + (1-alpha) * collab
 Alpha is set to 0.4, giving slightly more weight to the collaborative score.'''
 
 def hybrid_score(content_scores, collab_scores, alpha=0.4):
-    
+
     # Normalize content score
     min_c = content_scores['content_score'].min()
     max_c = content_scores['content_score'].max()
-    content_scores['content_normalized'] = (content_scores['content_score'] - min_c) / (max_c - min_c)
+
+    if max_c == min_c:
+        content_scores['content_normalized'] = 0
+    else:
+        content_scores['content_normalized'] = (
+            (content_scores['content_score'] - min_c) / (max_c - min_c)
+        )
 
     # Normalize collaborative score
-    collab_scores['collab_normalized'] = (collab_scores['collab_score'] - 1) / 4
+    min_collab = collab_scores['collab_score'].min()
+    max_collab = collab_scores['collab_score'].max()
 
-    # Merge both scores
-    combined = content_scores.merge(collab_scores[['id', 'collab_normalized']], on='id', how='inner')
+    if max_collab == min_collab:
+        collab_scores['collab_normalized'] = 0
+    else:
+        collab_scores['collab_normalized'] = (
+            (collab_scores['collab_score'] - min_collab) / (max_collab - min_collab)
+        )
+
+    # Merge
+    combined = content_scores.merge(
+        collab_scores[['id', 'collab_normalized']],
+        on='id',
+        how='inner'
+    )
 
     # Final score
-    combined['final_score'] = alpha * combined['content_normalized'] + (1 - alpha) * combined['collab_normalized']
+    combined['final_score'] = (
+        alpha * combined['content_normalized'] +
+        (1 - alpha) * combined['collab_normalized']
+    )
 
-    return combined[['id', 'title', 'final_score']].sort_values('final_score', ascending=False)
+    return combined[['id', 'title', 'final_score']].sort_values(
+        'final_score', ascending=False
+    )
 
 
 def main():
