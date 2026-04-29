@@ -14,8 +14,8 @@ load_dotenv()
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w300'
 
-# --- Add mypackage to path so we can import recommender ---
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'mypackage'))
+# --- Add movierec to path so we can import recommender ---
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'movierec'))
 from recommender import build_user_profile, content_score, collaborative_score, hybrid_score
 
 # --- Page setup ---
@@ -35,6 +35,8 @@ if 'finished' not in st.session_state:
     st.session_state.finished = False
 if 'recommendations' not in st.session_state:
     st.session_state.recommendations = None
+if 'recs_shown' not in st.session_state:
+    st.session_state.recs_shown = 10
 
 # --- Function to get movie poster from TMDB ---
 def get_poster(title):
@@ -48,7 +50,7 @@ def get_poster(title):
                 return TMDB_IMAGE_BASE + poster_path
     except:
         pass
-    return None 
+    return None
 
 def get_movie_details(title):
     url = f"https://api.themoviedb.org/3/search/movie?query={title}&language=en-US"
@@ -71,10 +73,6 @@ if st.session_state.recommendations is not None:
     st.divider()
 
     cols_per_row = 5
-    # --- Show more button ---
-    if 'recs_shown' not in st.session_state:
-        st.session_state.recs_shown = 10
-
     recs = st.session_state.recommendations.head(st.session_state.recs_shown)
     rows = [recs.iloc[i:i+cols_per_row] for i in range(0, len(recs), cols_per_row)]
 
@@ -88,14 +86,14 @@ if st.session_state.recommendations is not None:
                 else:
                     st.write("🎬")
                 st.caption(movie['title'])
-                with st.expander("More Info"):
-                    details = get_movie_details(movie["title"])
-                    if details: 
+                with st.expander("More info"):
+                    details = get_movie_details(movie['title'])
+                    if details:
                         st.write(f"⭐ {details['vote_average']}/10")
                         st.write(f"📅 {details['release_date'][:4]}")
                         st.write(f"📖 {details['overview']}")
-                    else: 
-                        st.write("No info availabe")
+                    else:
+                        st.write("No info available.")
 
     st.divider()
     if st.session_state.recs_shown < len(st.session_state.recommendations):
@@ -109,6 +107,7 @@ if st.session_state.recommendations is not None:
         st.session_state.user_ratings = {}
         st.session_state.finished = False
         st.session_state.recommendations = None
+        st.session_state.recs_shown = 10
         st.rerun()
 
 # --- Finished screen ---
@@ -139,12 +138,13 @@ else:
     st.progress(ratings_done / 30)
 
     poster_url = get_poster(movie['title'])
-    if poster_url:
-        st.image(poster_url, use_container_width = True)
-    else: 
-        st.write("🎬")
-    st.caption(movie['title'])
-    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if poster_url:
+            st.image(poster_url, use_container_width=True)
+        else:
+            st.write("🎬")
+        st.subheader(movie['title'])
 
     st.divider()
 
