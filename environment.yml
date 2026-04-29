@@ -1,0 +1,9 @@
+name: movierec
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - streamlit
+  - pandas
+  - pytest
+  - pip
