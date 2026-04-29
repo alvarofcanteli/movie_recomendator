@@ -124,8 +124,7 @@ print(ratings_table.head(10))
 
 '''Finally, the tables must be exported so that they can be worked on in another script,
 each will be exported to a csv and downloaded directly to the directory were the work is being done.'''
-movies_table.to_csv('movies_table.csv', index=False)
-users_table.to_csv('users_table.csv', index=False)
-ratings_table.to_csv('ratings_table.csv', index=False)
-
+movies_table.to_csv('data/movies_table.csv', index=False)
+users_table.to_csv('data/users_table.csv', index=False)
+ratings_table.to_csv('data/ratings_table.csv', index=False)
 print("\n=== TABLES EXPORTED ===")
