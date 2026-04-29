@@ -38,16 +38,16 @@ def test_build_user_profile():
 
     profile = build_user_profile(user_ratings, movies)
 
-    assert profile["Action"] == 4
-    assert profile["Director X"] == 3
-    assert profile["Actor1"] == 2
+    assert profile["Action"] == 4 #Makes sure that the grade given to the genre is 4
+    assert profile["Director X"] == 3 #Makes sure the grade given to the director is 3
+    assert profile["Actor1"] == 2 #Makes sure the grade given to the actor is 2
 
 
 def test_build_user_profile_missing_movie():
     movies = sample_movies()
     profile = build_user_profile({"Unknown": 5}, movies)
 
-    assert profile == {}
+    assert profile == {} #Makes sure that a profile is being created even if it misses a movie.
 
 
 # ---------------------------
@@ -59,8 +59,8 @@ def test_content_score_structure():
 
     scores = content_score(profile, movies)
 
-    assert "content_score" in scores.columns
-    assert len(scores) == 2
+    assert "content_score" in scores.columns #Makes sure that the scores are inside the column
+    assert len(scores) == 2 #makes sures that there are only 2 datas inside the scores which are profile and movies
 
 
 def test_content_score_ranking():
@@ -69,7 +69,7 @@ def test_content_score_ranking():
 
     scores = content_score(profile, movies)
 
-    assert scores.iloc[0]["title"] == "Movie A"
+    assert scores.iloc[0]["title"] == "Movie A" #Makes sure that the profile coincides with what it should
 
 
 # ---------------------------
@@ -83,7 +83,7 @@ def test_collaborative_score_runs():
 
     result = collaborative_score(user_ratings, ratings, movies)
 
-    assert isinstance(result, pd.DataFrame)
+    assert isinstance(result, pd.DataFrame) #makes sure that the results are a pandas dataframe
 
 
 def test_collaborative_score_empty():
@@ -92,7 +92,7 @@ def test_collaborative_score_empty():
 
     result = collaborative_score({"Unknown": 5}, ratings, movies)
 
-    assert result.empty
+    assert result.empty #makes sure that if there is no movie it will return an empty result
 
 
 # ---------------------------
@@ -113,7 +113,7 @@ def test_hybrid_score_structure():
 
     result = hybrid_score(content, collab)
 
-    assert "final_score" in result.columns
+    assert "final_score" in result.columns #Makes sure that the final result is inside the collumn
 
 
 def test_hybrid_score_ranking():
@@ -131,7 +131,7 @@ def test_hybrid_score_ranking():
 
     result = hybrid_score(content, collab)
 
-    assert result.iloc[0]["title"] == "A"
+    assert result.iloc[0]["title"] == "A" #makes sure that in the given example the title in the iloc would be "A"
 
 
 def test_hybrid_score_no_div_zero():
@@ -149,4 +149,4 @@ def test_hybrid_score_no_div_zero():
 
     result = hybrid_score(content, collab)
 
-    assert not result["final_score"].isna().any()
+    assert not result["final_score"].isna().any() #Makes sure that the final result doesn't contain any 0 or NaN values

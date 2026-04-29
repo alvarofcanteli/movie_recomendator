@@ -29,9 +29,9 @@ def test_onboarding_output_structure():
 
     result = compute_onboarding_movies(movies, ratings, min_ratings=50)
 
-    assert "title" in result.columns
-    assert "num_ratings" in result.columns
-    assert "mean_rating" in result.columns
+    assert "title" in result.columns #Makes sure that the dataframe has "title" in the columns
+    assert "num_ratings" in result.columns #Makes sure that the dataframe has "num_ratings" in the columns
+    assert "mean_rating" in result.columns #Makes sure that the dataframe has "mean_rating" in the columns
 
 
 # ---------------------------
@@ -44,7 +44,7 @@ def test_min_ratings_filter():
     result = compute_onboarding_movies(movies, ratings, min_ratings=50)
 
     # Movie C has only 10 ratings → should be excluded
-    assert "Movie C" not in result["title"].values
+    assert "Movie C" not in result["title"].values #Makes sure that if the movie doesn't have enough ratings for it, it won't be included
 
 
 # ---------------------------
@@ -57,7 +57,7 @@ def test_sorted_by_mean_rating():
     result = compute_onboarding_movies(movies, ratings, min_ratings=50)
 
     # Movie A has rating 5, Movie B has rating 4 → A should be first
-    assert result.iloc[0]["title"] == "Movie A"
+    assert result.iloc[0]["title"] == "Movie A" #Makes sure that the movie with the higher rating is selected first
 
 
 # ---------------------------
@@ -77,7 +77,7 @@ def test_top_limit():
 
     result = compute_onboarding_movies(movies, ratings, min_ratings=1)
 
-    assert len(result) <= 50
+    assert len(result) <= 50 #Makes sure that the results contains at most 50 movies
 
 
 # ---------------------------
@@ -95,4 +95,4 @@ def test_no_movies_pass_filter():
 
     result = compute_onboarding_movies(movies, ratings, min_ratings=50)
 
-    assert result.empty
+    assert result.empty #Makes sure that when no movies achieve the minimum number of ratings, the dataframe is empty
